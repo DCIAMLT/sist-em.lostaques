@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Empadronamiento Municipal</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+    <div class="theme-switch" id="theme-btn">🌓</div>
+    <div id="toast" class="notification"></div>
+
+    <div class="container">
+
+        <div id="view-welcome" class="view-section active card">
+            <div class="header-logo">
+                <img id="logo-main" src="https://i.ibb.co/Lz5Mn0TL/Dise-o-sin-t-tulo-1.png" alt="Logo Estructura Municipal">
+            </div>
+            <h1>Sistema de Empadronamiento Municipal</h1>
+            <h2>Vente Los Taques</h2>
+            <div style="margin-top: 25px;">
+                <div class="form-group">
+                    <label for="emp-nombre">Nombre del Empadronador:</label>
+                    <input type="text" id="emp-nombre" placeholder="Ej. Maria">
+                </div>
+                <div class="form-group">
+                    <label for="emp-apellido">Apellido del Empadronador:</label>
+                    <input type="text" id="emp-apellido" placeholder="Ej. Machado">
+                </div>
+                <div class="form-group">
+                    <label for="emp-cedula">Cédula de Identidad:</label>
+                    <input type="tel" id="emp-cedula" placeholder="Ej. 3012026">
+                </div>
+                <button id="btn-ingresar" class="btn btn-primary">Ingresar al Sistema</button>
+            </div>
+        </div>
+
+        <div id="view-form" class="view-section card">
+            <div class="header-logo">
+                <img id="logo-form" src="https://i.ibb.co/Lz5Mn0TL/Dise-o-sin-t-tulo-1.png" alt="Logo Estructura Municipal">
+            </div>
+            
+            <button id="btn-finalizar" class="btn btn-danger-logout">🚪 Finalizar Empadronamiento</button>
+            <h1 id="form-title">Sistema de Empadronamiento Municipal</h1>
+            <h2 style="margin-bottom: 15px;"> Vente Los Taques</h2>
+
+            <div style="font-size: 0.9rem; margin-bottom:20px; border-bottom:1px solid var(--border-color); padding-bottom:12px; color: var(--primary-color);">
+                <strong>Empadronador Activo:</strong> <span id="lbl-emp-nombre" style="font-weight: bold;"></span> 
+                (<span id="lbl-emp-cedula"></span>)
+            </div>
+
+            <div class="jornada-box">
+                <label style="margin-bottom: 8px; font-size: 0.9rem; letter-spacing: 0.5px;">📍 CONFIGURACIÓN DE LA JORNADA ¿DONDE ESTAS?</label>
+                <div class="form-group">
+                    <select id="jor-parroquia">
+                        <option value="" disabled selected>-- Seleccione Parroquia de la Jornada --</option>
+                        <option value="Parroquia Los Taques">Parroquia Los Taques</option>
+                        <option value="Parroquia Judibana">Parroquia Judibana</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <select id="jor-centro-base">
+                        <option value="" disabled selected>-- Seleccione Primero la Parroquia --</option>
+                    </select>
+                </div>
+            </div>
+
+            <input type="hidden" id="edit-index" value="-1">
+
+            <h3>Datos del Empadronado</h3>
+            <div class="form-group">
+                <label>Nombre:</label>
+                <input type="text" id="cit-nombre" placeholder="Nombre">
+            </div>
+            <div class="form-group">
+                <label>Apellido:</label>
+                <input type="text" id="cit-apellido" placeholder="Apellido">
+            </div>
+            <div class="form-group">
+                <label>Cédula de Identidad:</label>
+                <input type="tel" id="cit-cedula" placeholder="Ej. 20123456">
+            </div>
+
+            <div class="form-group">
+                <label>Cédula de la Madre:</label>
+                <div class="row-flex">
+                    <div class="flex-grow"><input type="tel" id="cit-madre"></div>
+                    <div>
+                        <select id="cit-madre-estatus" class="select-status-small">
+                            <option value="V">Viva</option>
+                            <option value="F">Fallecida</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Cédula del Padre:</label>
+                <div class="row-flex">
+                    <div class="flex-grow"><input type="tel" id="cit-padre"></div>
+                    <div>
+                        <select id="cit-padre-estatus" class="select-status-small">
+                            <option value="V">Vivo</option>
+                            <option value="F">Fallecido</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Cédula del Cónyuge:</label>
+                <div class="row-flex">
+                    <div class="flex-grow"><input type="tel" id="cit-conyuge"></div>
+                    <div>
+                        <select id="cit-conyuge-estatus" class="select-status-small">
+                            <option value="V">Vivo</option>
+                            <option value="F">Fallecido</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" style="background: var(--bg-color); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);">
+                <label>Hijos en edad de votación:</label>
+                <div id="dynamic-hijos-container"></div>
+                <button type="button" id="btn-agregar-hijo" class="btn btn-secondary">➕ Agregar Hijo</button>
+            </div>
+
+            <div class="form-group">
+                <label>Teléfono:</label>
+                <input type="tel" id="cit-telefono" placeholder="Ej. 04121234567">
+            </div>
+
+            <div class="form-group" style="background: rgba(0, 128, 128, 0.05); padding: 12px; border-radius: 8px; border: 1px solid var(--accent-color);">
+                <label style="color: var(--accent-color);">📍 Ubicación de Votación (Centro de Votación del Empadronado)</label>
+                
+                <div class="toggle-container">
+                    <div id="toggle-local" class="toggle-option active">CENTRO ELECTORAL</div>
+                    <div id="toggle-foraneo" class="toggle-option">OTRO CENTRO ELECTORAL / MUNICIPIO</div>
+                </div>
+
+                <div id="wrapper-electoral-local">
+                    <div class="form-group">
+                        <label>Parroquia donde vota:</label>
+                        <select id="cit-parroquia">
+                            <option value="" disabled selected>-- Seleccione Parroquia --</option>
+                            <option value="Parroquia Los Taques">Parroquia Los Taques</option>
+                            <option value="Parroquia Judibana">Parroquia Judibana</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Centro de Votación:</label>
+                        <select id="cit-centro">
+                            <option value="" disabled selected>-- Seleccione primero una parroquia --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="wrapper-electoral-foraneo" style="display: none;">
+                    <div class="form-group">
+                        <label>Escriba el Centro Electoral, Municipio o Estado:</label>
+                        <input type="text" id="cit-centro-foraneo" placeholder="Ej: Escuela Alberto Ravell, Punto Fijo">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Cédula del Familiar:</label>
+                <div class="row-flex" style="margin-bottom: 8px;">
+                    <div class="flex-grow"><input type="tel" id="cit-hermano" placeholder="Ingrese Cedula de Identidad"></div>
+                    <div>
+                        <select id="cit-hermano-estatus" class="select-status-small">
+                            <option value="V">Vivo</option>
+                            <option value="F">Fallecido</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="dynamic-family-container"></div>
+                <button type="button" id="btn-agregar-familiar" class="btn btn-secondary">➕ Agregar Otro Familiar</button>
+            </div>
+
+            <div id="form-buttons-container">
+                <button id="btn-submit" class="btn btn-primary" style="background-color: var(--accent-color); margin-top:15px;">Empadronar</button>
+            </div>
+
+            <div class="list-section">
+                <h3>Mis Empadronados <span id="counter" class="counter-badge">0 / 200</span></h3>
+                <div class="search-box-container">
+                    <input type="text" id="buscador-interno" placeholder="🔍 Buscar...">
+                </div>
+                <div id="panel-control-borrado" style="display: none; margin-bottom: 15px;">
+                    <button id="btn-clear-all" class="btn-danger-clear">🗑️ Limpiar Todo</button>
+                </div>
+                <div id="lista-vacia" style="text-align:center; color:var(--text-secondary); font-size:0.9rem; padding:15px; font-style:italic;">Lista vacía.</div>
+                <div id="empadronados-lista"></div>
+                <button id="btn-download" class="btn btn-download">📥 Descargar Lista de Empadronados</button>
+            </div>
+
+            <div class="footer-copyright">© 2026 Vente Los Taques. Derechos reservados. Coordinación Municipal Electoral</div>
+        </div>
+    </div>
+
+    <script src="js/funciones.js"></script>
+</body>
+</html>
