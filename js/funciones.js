@@ -9,6 +9,7 @@ const CENTROS_POR_PARROQUIA = {
 let listaEmpadronados = [];
 let origenElectoralActual = 'local'; 
 let datosEmpadronador = { nombre: '', apellido: '', cedula: '' };
+let tieneTelefonoActual = 'no';
 
 // ==========================================================================
 // CONTROLADORES DE EVENTOS DE INTERFAZ (DOMContentLoaded)
@@ -51,6 +52,11 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('btn-agregar-familiar').addEventListener('click', () => agregarCampoFamiliar());
     document.getElementById('toggle-local').addEventListener('click', () => setOrigenElectoral('local'));
     document.getElementById('toggle-foraneo').addEventListener('click', () => setOrigenElectoral('foraneo'));
+    
+    // Eventos Nuevos para el Switch de Teléfono
+    document.getElementById('toggle-tel-no').addEventListener('click', () => setTieneTelefono('no'));
+    document.getElementById('toggle-tel-si').addEventListener('click', () => setTieneTelefono('si'));
+
     document.getElementById('cit-parroquia').addEventListener('change', () => cargarCentrosPorParroquia());
     document.getElementById('buscador-interno').addEventListener('input', filtrarListaVisual);
     document.getElementById('btn-clear-all').addEventListener('click', botonBorrarTodaLaListaManual);
@@ -102,6 +108,22 @@ function setOrigenElectoral(tipo) {
     }
 }
 
+// Nueva función para gestionar el switch de teléfono
+function setTieneTelefono(opcion) {
+    tieneTelefonoActual = opcion;
+    const btnNo = document.getElementById('toggle-tel-no');
+    const btnSi = document.getElementById('toggle-tel-si');
+    const inputTel = document.getElementById('cit-telefono');
+
+    if (opcion === 'si') {
+        btnSi.classList.add('active'); btnNo.classList.remove('active');
+        inputTel.disabled = false; inputTel.style.opacity = '1'; inputTel.focus();
+    } else {
+        btnNo.classList.add('active'); btnSi.classList.remove('active');
+        inputTel.disabled = true; inputTel.style.opacity = '0.5'; inputTel.value = '';
+    }
+}
+
 function inyectarDatosOperadorPantalla() {
     document.getElementById('lbl-emp-nombre').innerText = `${datosEmpadronador.nombre} ${datosEmpadronador.apellido}`.toUpperCase();
     document.getElementById('lbl-emp-cedula').innerText = `C.I. ${datosEmpadronador.cedula}`;
@@ -126,9 +148,17 @@ function procesarInicioManual() {
     actualizarListaVisual();
 }
 
+// CORRECCIÓN: Borrar configuración de zona (parroquia y centro base) al salir
 function finalizarEmpadronamiento() {
     if (confirm("¿Cerrar sesión?")) {
         localStorage.removeItem('datosEmpadronadorDefinitivoLocal');
+        localStorage.removeItem('jornadaParroquiaLocal');
+        localStorage.removeItem('jornadaCentroLocal');
+        
+        // Resetear visualmente los select de la jornada
+        document.getElementById('jor-parroquia').value = '';
+        document.getElementById('jor-centro-base').innerHTML = '<option value="" disabled selected>-- Seleccione Primero la Parroquia --</option>';
+
         document.getElementById('view-form').classList.remove('active');
         document.getElementById('view-welcome').classList.add('active');
     }
@@ -175,7 +205,13 @@ function guardarRegistro() {
     const nombre = document.getElementById('cit-nombre').value.trim();
     const apellido = document.getElementById('cit-apellido').value.trim();
     const cedula = document.getElementById('cit-cedula').value.trim().replace(/\D/g, '');
-    const telefono = document.getElementById('cit-telefono').value.trim();
+    
+    // Condicionar teléfono según el switch activo
+    let telefono = 'N/A';
+    if (tieneTelefonoActual === 'si') {
+        const telValue = document.getElementById('cit-telefono').value.trim();
+        if (telValue) telefono = telValue;
+    }
     
     let parroquia = "EXTERNO / OTRA";
     let centro = "";
@@ -218,6 +254,7 @@ function guardarRegistro() {
     const obj = {
         nombre, apellido, cedula, telefono, parroquia, centro, hijos, familiares,
         origenElectoral: origenElectoralActual,
+        tieneTelefono: tieneTelefonoActual,
         madre: madreCi, madreEstatus: madreEst,
         padre: padreCi, padreEstatus: padreEst,
         conyuge: conyugeCi, conyugeEstatus: conyugeEst
@@ -244,6 +281,7 @@ function limpiarFormularioCompleto() {
     document.getElementById('cit-centro-foraneo').value = '';
     document.getElementById('dynamic-hijos-container').innerHTML = ''; document.getElementById('dynamic-family-container').innerHTML = '';
     setOrigenElectoral('local');
+    setTieneTelefono('no');
 }
 
 window.editarElemento = function(index) {
@@ -252,7 +290,13 @@ window.editarElemento = function(index) {
     document.getElementById('cit-nombre').value = c.nombre;
     document.getElementById('cit-apellido').value = c.apellido;
     document.getElementById('cit-cedula').value = c.cedula;
-    document.getElementById('cit-telefono').value = c.telefono || '';
+
+    if (c.tieneTelefono === 'si') {
+        setTieneTelefono('si');
+        document.getElementById('cit-telefono').value = c.telefono;
+    } else {
+        setTieneTelefono('no');
+    }
 
     document.getElementById('cit-madre').value = c.madre || '';
     document.getElementById('cit-madre-estatus').value = c.madreEstatus || 'V';
@@ -377,7 +421,7 @@ function generarPDFReal() {
             c.madre ? `${c.madre} (${c.madreEstatus})` : 'SIN DATOS',
             c.padre ? `${c.padre} (${c.padreEstatus})` : 'SIN DATOS',
             c.conyuge ? `${c.conyuge} (${c.conyugeEstatus})` : 'SIN DATOS',
-            c.telefono || 'N/A',
+            c.telefono || 'N/A', // Mantiene N/A si el switch estuvo apagado
             c.hijos && c.hijos.length > 0 ? c.hijos.map(h => `${h.cedula} (${h.estatus})`).join('\n') : 'SIN DATOS',
             c.familiares && c.familiares.length > 0 ? c.familiares.map(f => `${f.cedula} (${f.estatus})`).join('\n') : 'SIN DATOS',
             estatusCelda
@@ -426,7 +470,7 @@ function generarPDFReal() {
             doc.line(15, 36, 282, 36);
         }
     });
-
+                
     const finalY = doc.lastAutoTable.finalY + 20;
     doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(60, 60, 60);
     
