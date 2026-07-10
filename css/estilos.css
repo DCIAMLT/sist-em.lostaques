@@ -15,15 +15,16 @@
     --input-bg: #FFFFFF;
 }
 
+/* CORRECCIÓN DE CONTRASTE: Colores mucho más legibles e iluminados en gris claro */
 [data-theme="dark"] {
-    --primary-color: #34495E; 
+    --primary-color: #5dade2; /* Azul brillante para títulos oscuros */
     --accent-color: #1ABC9C;  
-    --bg-color: #1A1A1A;
-    --card-bg: #2C2C2C;
-    --text-color: #E0E0E0;
+    --bg-color: #121212;
+    --card-bg: #1E1E1E;
+    --text-color: #F0F3F4;
     --border-color: #444444;
-    --text-secondary: #AAAAAA;
-    --input-bg: #3A3A3A;
+    --text-secondary: #B3C0CE; /* Gris claro/blanco azulado con alta legibilidad */
+    --input-bg: #2A2A2A;
 }
 
 /* ==========================================================================
@@ -124,6 +125,15 @@ label {
     font-size: 0.95rem;
 }
 
+/* Forzar que las etiquetas dentro de cajas con borde verde sigan siendo visibles */
+[data-theme="dark"] .label-accent-fix {
+    color: var(--accent-color) !important;
+}
+
+[data-theme="dark"] .emp-active-bar {
+    color: var(--text-color) !important;
+}
+
 input[type="text"], input[type="tel"], select {
     width: 100%;
     padding: 12px;
@@ -166,6 +176,11 @@ input:focus, select:focus {
     background-color: var(--primary-color);
     color: white;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+[data-theme="dark"] .toggle-option.active {
+    background-color: #2980b9;
+    color: #ffffff;
 }
 
 .select-status-small {
@@ -211,6 +226,10 @@ input:focus, select:focus {
     background-color: var(--primary-color);
     color: white;
     box-shadow: 0 4px 6px rgba(27, 54, 93, 0.2);
+}
+
+[data-theme="dark"] .btn-primary {
+    background-color: #2980b9;
 }
 
 .btn-secondary {
@@ -307,6 +326,10 @@ input:focus, select:focus {
     float: right;
 }
 
+[data-theme="dark"] .counter-badge {
+    background: #2980b9;
+}
+
 .search-box-container {
     margin-bottom: 12px;
     position: relative;
@@ -365,6 +388,10 @@ input:focus, select:focus {
     z-index: 999;
 }
 
+[data-theme="dark"] .theme-switch {
+    background-color: #2980b9;
+}
+
 .footer-copyright {
     text-align: center;
     font-size: 0.8rem;
@@ -395,4 +422,4 @@ input:focus, select:focus {
     .select-status-small {
         width: 100%;
     }
-}
+   }
