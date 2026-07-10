@@ -51,7 +51,7 @@
             <h1 id="form-title">Sistema de Empadronamiento Municipal</h1>
             <h2 style="margin-bottom: 15px;"> Vente Los Taques</h2>
 
-            <div style="font-size: 0.9rem; margin-bottom:20px; border-bottom:1px solid var(--border-color); padding-bottom:12px; color: var(--primary-color);">
+            <div style="font-size: 0.9rem; margin-bottom:20px; border-bottom:1px solid var(--border-color); padding-bottom:12px; color: var(--primary-color);" class="emp-active-bar">
                 <strong>Empadronador Activo:</strong> <span id="lbl-emp-nombre" style="font-weight: bold;"></span> 
                 (<span id="lbl-emp-cedula"></span>)
             </div>
@@ -131,13 +131,18 @@
                 <button type="button" id="btn-agregar-hijo" class="btn btn-secondary">➕ Agregar Hijo</button>
             </div>
 
+            <!-- MODIFICACIÓN: SWITCH PARA ACTIVAR/DESACTIVAR TELÉFONO -->
             <div class="form-group">
-                <label>Teléfono:</label>
-                <input type="tel" id="cit-telefono" placeholder="Ej. 04121234567">
+                <label>¿Posee Teléfono?</label>
+                <div class="toggle-container" style="margin-bottom: 8px;">
+                    <div id="toggle-tel-no" class="toggle-option active">NO (N/A)</div>
+                    <div id="toggle-tel-si" class="toggle-option">SÍ (REGISTRAR)</div>
+                </div>
+                <input type="tel" id="cit-telefono" placeholder="Ej. 04121234567" disabled style="opacity: 0.5;">
             </div>
 
             <div class="form-group" style="background: rgba(0, 128, 128, 0.05); padding: 12px; border-radius: 8px; border: 1px solid var(--accent-color);">
-                <label style="color: var(--accent-color);">📍 Ubicación de Votación (Centro de Votación del Empadronado)</label>
+                <label style="color: var(--accent-color);" class="label-accent-fix">📍 Ubicación de Votación (Centro de Votación del Empadronado)</label>
                 
                 <div class="toggle-container">
                     <div id="toggle-local" class="toggle-option active">CENTRO ELECTORAL</div>
@@ -207,4 +212,5 @@
 
     <script src="js/funciones.js"></script>
 </body>
-</html>
+                                </html>
+    
